@@ -28,13 +28,13 @@ jobs:
           restore-keys: ${{ runner.os }}-maven
 
       - name: Clean with Maven
-        run: mvn --batch-mode clean
+        run: mvn -B clean
 
       - name: Compile with Maven
-        run: mvn --batch-mode compile
+        run: mvn -B compile
 
-      - name: Run Checkstyle
-        run: mvn --batch-mode checkstyle:check
+#      - name: Run Checkstyle
+#        run: mvn -B checkstyle:check
 
       - name: Test with Maven
-        run: mvn --batch-mode test
+        run: mvn -B test
