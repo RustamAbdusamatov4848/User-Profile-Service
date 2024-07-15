@@ -2,7 +2,7 @@ FROM openjdk:21-jdk-slim
 
 WORKDIR /app
 
-ARG JAR_FILE=/user-profile-app/target/user-profile-app-0.0.1-SNAPSHOT.jar
+ARG JAR_FILE
 
 ADD  ${JAR_FILE} user-profile-app.jar
 
