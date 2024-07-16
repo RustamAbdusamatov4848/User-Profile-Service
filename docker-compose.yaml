@@ -6,7 +6,7 @@ services:
     image: postgres:latest
     restart: always
     environment:
-      POSTGRES_DB:
+      POSTGRES_DB: user
       POSTGRES_USER: /run/secrets/postgres_user
       POSTGRES_PASSWORD: /run/secrets/postgres_password
     ports:
@@ -23,7 +23,7 @@ services:
     depends_on:
       - db
     environment:
-      POSTGRES_DB:
+      POSTGRES_DB: user
       POSTGRES_USER: /run/secrets/postgres_user
       POSTGRES_PASSWORD: /run/secrets/postgres_password
     ports:
