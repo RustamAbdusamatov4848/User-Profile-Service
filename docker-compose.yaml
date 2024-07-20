@@ -18,7 +18,7 @@ services:
       - postgres_password
 
   app:
-    image: ghcr.io/user-profile-service:latest
+    image: ghcr.io/iprody/iprody-devs-gr0000000011-user-profile/user-profile-service:latest
     restart: always
     depends_on:
       - db

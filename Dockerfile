@@ -9,7 +9,7 @@ COPY user-profile-app/src user-profile-app/src
 RUN mvn -B dependency:resolve
 RUN mvn -B dependency:resolve-plugins
 
-RUN mvn clean package -Dcheckstyle.skip
+RUN mvn -B clean package -Dcheckstyle.skip
 
 RUN VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout) && \
     cp user-profile-app/target/user-profile-app-${VERSION}.jar user-profile-app.jar
