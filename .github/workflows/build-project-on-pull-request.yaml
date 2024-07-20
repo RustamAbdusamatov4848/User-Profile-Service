@@ -33,8 +33,8 @@ jobs:
       - name: Compile with Maven
         run: mvn -B compile
 
-#      - name: Run Checkstyle
-#        run: mvn -B checkstyle:check
+      - name: Run Checkstyle
+        run: mvn -B checkstyle:check
 
       - name: Test with Maven
         run: mvn -B test

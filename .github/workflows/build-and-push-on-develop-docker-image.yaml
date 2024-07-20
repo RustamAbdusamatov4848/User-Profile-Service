@@ -28,11 +28,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set lower case repo name
+        run: echo "REPO_NAME_LC=${REPO_NAME,,}" >> $GITHUB_ENV
+        env:
+          REPO_NAME: '${{ github.repository }}'
+
       - name: Build Docker image and push to GitHub Container Registry
         id: push
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository }}/user-profile-service:latest
-
+          tags: ghcr.io/${{ env.REPO_NAME_LC }}/user-profile-service:latest
