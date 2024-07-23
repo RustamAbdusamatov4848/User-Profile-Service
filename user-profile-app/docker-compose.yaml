@@ -47,8 +47,8 @@ services:
 
 secrets:
   postgres_password:
-    file: ./secrets/postgres_password.txt
+    file: ../secrets/postgres_password.txt
   postgres_user:
-    file: ./secrets/postgres_user.txt
+    file: ../secrets/postgres_user.txt
   pgadmin_password:
-    file: ./secrets/pgadmin_password.txt
+    file: ../secrets/pgadmin_password.txt
