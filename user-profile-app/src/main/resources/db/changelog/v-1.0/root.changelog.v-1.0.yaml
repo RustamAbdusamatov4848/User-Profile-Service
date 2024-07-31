@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Rustam Abdusamatov
+      changes:
+        - sqlFile:
+            path: create-users-table.sql
+            relativeToChangelogFile: true
