@@ -3,8 +3,9 @@ version: '3.8'
 services:
 
   db:
-    image: postgres:latest
+    image: 'postgres:latest'
     restart: always
+    container_name: user-service-db
     environment:
       POSTGRES_DB: user
       POSTGRES_USER_FILE: /run/secrets/postgres_user
@@ -18,23 +19,26 @@ services:
       - postgres_password
 
   app:
-    image: ghcr.io/iprody/iprody-devs-gr0000000011-user-profile/user-profile-service:latest
+    image: 'ghcr.io/iprody/iprody-devs-gr0000000011-user-profile/user-profile-service:latest'
     restart: always
-    depends_on:
-      - db
+    container_name: user-service-app
     environment:
-      POSTGRES_DB: user
+      DATASOURCE_URL: 'jdbc:postgresql://db:5432/user'
+      DATASOURCE_DRIVER: 'org.postgresql.Driver'
       POSTGRES_USER: /run/secrets/postgres_user
       POSTGRES_PASSWORD: /run/secrets/postgres_password
     ports:
       - "8080:8080"
       - "8443:8443"
+    depends_on:
+      - db
     secrets:
       - postgres_user
       - postgres_password
 
   pgadmin:
-    image: dpage/pgadmin4:latest
+    image: 'dpage/pgadmin4:latest'
+    container_name: pg-admin
     depends_on:
       - db
     environment:
