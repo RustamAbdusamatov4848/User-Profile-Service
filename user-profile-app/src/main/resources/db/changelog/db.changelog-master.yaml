@@ -9,9 +9,21 @@ databaseChangeLog:
   - include:
       file: v-1.0/root.changelog.v-1.0.yaml
       relativeToChangelogFile: true
+
   - changeSet:
       id: 1
       author: Rustam Abdusamatov
       changes:
         - tagDatabase:
             tag: v-1.0
+
+  - include:
+      file: v-2.0/root.changelog.v-2.0.yaml
+      relativeToChangelogFile: true
+
+  - changeSet:
+      id: 2
+      author: Rustam Abdusamatov
+      changes:
+        - tagDatabase:
+            tag: v-2.0
