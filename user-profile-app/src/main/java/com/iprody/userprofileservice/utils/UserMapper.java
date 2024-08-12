@@ -4,6 +4,7 @@ import com.iprody.userprofileservice.dto.UserDto;
 import com.iprody.userprofileservice.models.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring", uses = {UserContactMapper.class})
 public interface UserMapper {
@@ -13,4 +14,8 @@ public interface UserMapper {
 
     @Mapping(source = "userContactId", target = "userContact.id")
     User userDtoToUser(UserDto userDTO);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "userContact", ignore = true)
+    User updateUserFromDto(UserDto userDto, @MappingTarget User user);
 }
