@@ -12,11 +12,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserDto {
     private Long id;
-    @Size(max = 50)
+    @Size(max = 50, message = "Firstname should not be more then 50 characters")
     private String firstName;
-    @Size(max = 50)
+    @Size(max = 50, message = "Lastname should not be more then 50 characters")
     private String lastName;
-    @Email
+    @Email(message = "Invalid email format")
     private String email;
     private Long userContactId;
 }
