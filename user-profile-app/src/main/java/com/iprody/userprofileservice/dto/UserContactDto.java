@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 public class UserContactDto {
     private Long id;
     @Min(value = 5)
-    @Pattern(regexp = "^@[a-zA-Z0-9_]{4,}$")
+    @Pattern(regexp = "^@[a-zA-Z0-9_]{4,}$", message = "Invalid telegram ID format")
     private String telegramId;
-    @Pattern(regexp = "^\\+[1-9]\\d{1,14}$")
+    @Pattern(regexp = "^\\+[1-9]\\d{1,14}$", message = "Invalid phone format")
     private String mobilePhone;
 }
