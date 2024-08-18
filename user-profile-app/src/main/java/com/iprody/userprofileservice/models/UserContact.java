@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserContact {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "user_contacts_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_contacts_seq")
     @SequenceGenerator(
             name = "user_contacts_seq",
             sequenceName = "user_contacts_sequence",
