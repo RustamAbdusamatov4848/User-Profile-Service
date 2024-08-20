@@ -1,3 +1,4 @@
+
 package com.iprody.userprofileservice.dto;
 
 import jakarta.validation.constraints.Pattern;
