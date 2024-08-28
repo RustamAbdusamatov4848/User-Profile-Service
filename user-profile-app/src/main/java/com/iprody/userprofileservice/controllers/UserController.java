@@ -2,9 +2,9 @@ package com.iprody.userprofileservice.controllers;
 
 import com.iprody.userprofileservice.dto.UserContactDto;
 import com.iprody.userprofileservice.dto.UserDto;
+import com.iprody.userprofileservice.exceptions.ResourceNotFoundException;
 import com.iprody.userprofileservice.services.UserContactService;
 import com.iprody.userprofileservice.services.UserService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.openapitools.api.V1UserApi;
@@ -25,8 +25,7 @@ public class UserController implements V1UserApi {
     public ResponseEntity<UserDto> getUserById(@PathVariable("id") Long userId) {
         return userService.findUserById(userId)
                 .map(user -> new ResponseEntity<>(user, HttpStatus.OK))
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "User with user ID: " + userId + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", userId));
     }
 
     @Override
@@ -51,16 +50,14 @@ public class UserController implements V1UserApi {
     public ResponseEntity<UserContactDto> getUserContactByContactId(@PathVariable("id") Long userContactId) {
         return userContactService.findUserContactsById(userContactId)
                 .map(contact -> new ResponseEntity<>(contact, HttpStatus.OK))
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "User contact with user contact ID: " + userContactId + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User contact", userContactId));
     }
 
     @Override
     public ResponseEntity<UserContactDto> getUserContactByUserId(@PathVariable("id") Long userId) {
         return userContactService.findUserContactByUserId(userId)
                 .map(contact -> new ResponseEntity<>(contact, HttpStatus.OK))
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "User contact with user ID: " + userId + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User contact", userId));
     }
 
     @Override

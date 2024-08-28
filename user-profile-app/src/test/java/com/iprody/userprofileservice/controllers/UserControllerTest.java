@@ -75,7 +75,7 @@ public class UserControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Failed entity search"))
-                .andExpect(jsonPath("$.errors.cause").value("User with user ID: " + id + " not found"));
+                .andExpect(jsonPath("$.errors.cause").value("User with ID: " + id + ", not found"));
 
         verify(userService).findUserById(id);
     }
@@ -184,7 +184,7 @@ public class UserControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Failed entity search"))
                 .andExpect(jsonPath("$.errors.cause")
-                        .value("User contact with user contact ID: " + contactId + " not found"));
+                        .value("User contact with ID: " + contactId + ", not found"));
 
         verify(userContactService).findUserContactsById(contactId);
     }
@@ -229,7 +229,7 @@ public class UserControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Failed entity search"))
                 .andExpect(jsonPath("$.errors.cause")
-                        .value("User contact with user ID: " + userDtoId + " not found"));
+                        .value("User contact with ID: " + userDtoId + ", not found"));
 
         verify(userContactService).findUserContactByUserId(userDtoId);
     }
