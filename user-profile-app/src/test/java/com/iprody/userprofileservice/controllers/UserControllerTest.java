@@ -14,9 +14,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -77,7 +74,8 @@ public class UserControllerTest {
         mockMvc.perform(get(BASE_URL + "/{id}", id)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
-                .andExpect(status().reason(containsString("User with ID: " + id + " not found")));
+                .andExpect(jsonPath("$.message").value("Failed entity search"))
+                .andExpect(jsonPath("$.errors.cause").value("User with user ID: " + id + " not found"));
 
         verify(userService).findUserById(id);
     }
@@ -120,10 +118,10 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidUserDto)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", hasSize(3)))
-                .andExpect(jsonPath("$", hasItem("Firstname should not be more then 50 characters")))
-                .andExpect(jsonPath("$", hasItem("Lastname should not be more then 50 characters")))
-                .andExpect(jsonPath("$", hasItem("Invalid email format")));
+                .andExpect(jsonPath("$.message").value("Validation failed"))
+                .andExpect(jsonPath("$.errors.firstName").value("Firstname should not be more then 50 characters"))
+                .andExpect(jsonPath("$.errors.lastName").value("Lastname should not be more then 50 characters"))
+                .andExpect(jsonPath("$.errors.email").value("Invalid email format"));
     }
 
     @Test
@@ -184,7 +182,9 @@ public class UserControllerTest {
         mockMvc.perform(get(BASE_URL + "/contacts/{id}", contactId)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
-                .andExpect(status().reason(containsString("User contact with ID: " + contactId + " not found")));
+                .andExpect(jsonPath("$.message").value("Failed entity search"))
+                .andExpect(jsonPath("$.errors.cause")
+                        .value("User contact with user contact ID: " + contactId + " not found"));
 
         verify(userContactService).findUserContactsById(contactId);
     }
@@ -227,8 +227,9 @@ public class UserControllerTest {
         mockMvc.perform(get(BASE_URL + "/{id}/contacts", userDtoId)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
-                .andExpect(status().reason(containsString(
-                        "User contact with user ID: " + userDtoId + " not found")));
+                .andExpect(jsonPath("$.message").value("Failed entity search"))
+                .andExpect(jsonPath("$.errors.cause")
+                        .value("User contact with user ID: " + userDtoId + " not found"));
 
         verify(userContactService).findUserContactByUserId(userDtoId);
     }
@@ -261,9 +262,9 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userContactDto)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$", hasItem("Invalid telegram ID format")))
-                .andExpect(jsonPath("$", hasItem("Invalid phone format")));
+                .andExpect(jsonPath("$.message").value("Validation failed"))
+                .andExpect(jsonPath("$.errors.telegramId").value("Invalid telegram ID format"))
+                .andExpect(jsonPath("$.errors.mobilePhone").value("Invalid phone format"));
     }
 
     private static UserDto createUserDtoWithId() {
