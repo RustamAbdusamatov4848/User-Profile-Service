@@ -24,7 +24,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                $ref: "#/components/schemas/UserDto"
         "400":
           description: Validation errors
           content:
@@ -47,7 +47,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                $ref: "#/components/schemas/UserDto"
         "400":
           description: Validation errors
           content:
@@ -103,7 +103,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                $ref: "#/components/schemas/UserContactDto"
         "400":
           description: Validation errors
           content:
