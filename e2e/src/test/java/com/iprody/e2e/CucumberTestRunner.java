@@ -5,9 +5,11 @@ import io.cucumber.junit.CucumberOptions;
 import org.junit.runner.RunWith;
 
 @RunWith(Cucumber.class)
-@CucumberOptions(features = {"e2e/src/test/resources/features"},
-                 plugin = {"json:e2e/target/cucumber-json-report.json",
-                           "html:e2e/target/cucumber-html-report.html"})
+@CucumberOptions(
+        features = {"src/test/resources/features"},
+        glue = {"com.iprody.e2e.stepdefinitions", "com.iprody.e2e.config"},
+        plugin = {"json:target/cucumber-json-report.json",
+                "html:target/cucumber-html-report.html"})
 public class CucumberTestRunner {
 
 }
