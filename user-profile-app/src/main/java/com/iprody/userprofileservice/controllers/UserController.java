@@ -29,13 +29,13 @@ public class UserController implements V1UserApi {
     }
 
     @Override
-    public ResponseEntity<Object> createUser(@Valid @RequestBody UserDto userDto) {
+    public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto) {
         UserDto createdUserDto = userService.createUser(userDto);
         return new ResponseEntity<>(createdUserDto, HttpStatus.CREATED);
     }
 
     @Override
-    public ResponseEntity<Object> updateUser(@Valid @RequestBody UserDto userDto) {
+    public ResponseEntity<UserDto> updateUser(@Valid @RequestBody UserDto userDto) {
         userService.updateUser(userDto);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -61,7 +61,7 @@ public class UserController implements V1UserApi {
     }
 
     @Override
-    public ResponseEntity<Object> updateUserContactByUserId(
+    public ResponseEntity<UserContactDto> updateUserContactByUserId(
             @PathVariable("id") Long userId,
             @Valid @RequestBody UserContactDto userContactDto) {
 

@@ -34,7 +34,7 @@ public class User {
     @Column(name = "email", unique = true)
     private String email;
 
-    @OneToOne(cascade = CascadeType.MERGE)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_contacts_id", referencedColumnName = "id")
     private UserContact userContact;
 }

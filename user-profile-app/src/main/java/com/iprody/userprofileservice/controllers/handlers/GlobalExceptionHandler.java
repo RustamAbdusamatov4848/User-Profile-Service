@@ -2,6 +2,7 @@ package com.iprody.userprofileservice.controllers.handlers;
 
 import com.iprody.userprofileservice.errors.ErrorResponse;
 import com.iprody.userprofileservice.exceptions.ResourceNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -39,6 +41,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleResourceProcessingException(Exception ex) {
+        log.error("An error occurred: {}", ex.getMessage(), ex);
         ErrorResponse errorsResponseDto = new ErrorResponse(
                 "Internal server error", Collections.emptyMap());
         return new ResponseEntity<>(errorsResponseDto, HttpStatus.INTERNAL_SERVER_ERROR);
