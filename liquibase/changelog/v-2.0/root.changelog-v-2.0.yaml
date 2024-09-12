@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: v2-1
+      author: Rustam Abdusamatov
+      changes:
+        - sqlFile:
+            path: create-user-contacts-table.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: v2-2
+      author: Rustam Abdusamatov
+      changes:
+        - sqlFile:
+            path: alter-users-table.sql
+            relativeToChangelogFile: true
