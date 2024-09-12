@@ -171,9 +171,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>
-                                ${project.basedir}/src/main/resources/open-api.yaml
-                            </inputSpec>
+                            <inputSpec>${project.parent.basedir}/openapi/user-service/open-api.yaml</inputSpec>
                             <generatorName>spring</generatorName>
                             <apiNameSuffix>UserApi</apiNameSuffix>
                             <generateApiTests>false</generateApiTests>
