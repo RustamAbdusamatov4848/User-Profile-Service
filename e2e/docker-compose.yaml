@@ -5,28 +5,28 @@ services:
   db:
     image: 'postgres:latest'
     restart: unless-stopped
-    container_name: user-service-db
+    container_name: user-service-test-db
     environment:
       POSTGRES_DB: user
-      POSTGRES_USER_FILE: /run/secrets/postgres_username
+      POSTGRES_USER_FILE: /run/secrets/postgres_user
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
     ports:
       - "5432:5432"
     volumes:
-      - postgres_db_data:/var/lib/postgresql/data
+      - postgres_db_data:/var/lib/postgresql/test-data
     secrets:
-      - postgres_username
+      - postgres_user
       - postgres_password
 
   app:
     image: 'ghcr.io/iprody/iprody-devs-gr0000000011-user-profile/user-profile-service:latest'
     restart: always
-    container_name: user-service-app
+    container_name: user-service-app-test
     environment:
       DATASOURCE_URL: 'jdbc:postgresql://db:5432/user'
       DATASOURCE_DRIVER: 'org.postgresql.Driver'
-      DATASOURCE_USERNAME_SECRET: /run/secrets/postgres_username
-      DATASOURCE_PASSWORD_SECRET: /run/secrets/postgres_password
+      POSTGRES_USER: /run/secrets/postgres_user
+      POSTGRES_PASSWORD: /run/secrets/postgres_password
     ports:
       - "8080:8080"
       - "8443:8443"
@@ -34,12 +34,12 @@ services:
       - db
       - liquibase
     secrets:
-      - postgres_username
+      - postgres_user
       - postgres_password
 
   liquibase:
     image: liquibase/liquibase:latest
-    container_name: user-service-liquibase
+    container_name: user-service-liquibase-test
     depends_on:
       - db
     volumes:
@@ -49,33 +49,18 @@ services:
       liquibase
       --url=jdbc:postgresql://db:5432/user
       --changelog-file=./changelog/db.changelog-master.yaml
-      --username=$$(cat /run/secrets/postgres_username)
+      --username=$$(cat /run/secrets/postgres_user)
       --password=$$(cat /run/secrets/postgres_password)
-      update '
+      update --contexts=test'
     secrets:
-      - postgres_username
+      - postgres_user
       - postgres_password
-
-  pgadmin:
-    image: 'dpage/pgadmin4:latest'
-    container_name: pg-admin
-    depends_on:
-      - db
-    environment:
-      PGADMIN_DEFAULT_EMAIL: default@gmail.com
-      PGADMIN_DEFAULT_PASSWORD_FILE: /run/secrets/pgadmin_password
-    ports:
-      - "8888:80"
-    secrets:
-      - pgadmin_password
 
 secrets:
   postgres_password:
     file: ../secrets/postgres_password.txt
-  postgres_username:
+  postgres_user:
     file: ../secrets/postgres_user.txt
-  pgadmin_password:
-    file: ../secrets/pgadmin_password.txt
 
 volumes:
   postgres_db_data:
