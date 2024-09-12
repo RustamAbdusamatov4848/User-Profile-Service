@@ -128,6 +128,7 @@ public class UserControllerTest {
     public void whenUpdateUser_thenShouldReturnNoContent() throws Exception {
         //given
         UserDto userDto = createUserDtoWithId();
+        when(userService.findUserById(userDto.getId())).thenReturn(Optional.of(userDto));
 
         //when-then
         mockMvc.perform(put(BASE_URL)
@@ -142,6 +143,7 @@ public class UserControllerTest {
     public void whenDeleteUser_thenShouldReturnNoContent() throws Exception {
         //given
         Long id = 1L;
+        when(userService.findUserById(id)).thenReturn(Optional.of(new UserDto()));
 
         //when-then
         mockMvc.perform(delete(BASE_URL + "/{id}", id))
