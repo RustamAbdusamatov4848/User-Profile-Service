@@ -3,7 +3,7 @@ Feature: Create User Test
   Scenario: Create User Successfully
     Given UP Service is up and running
     Given User Endpoint available
-    Given customer with valid data
+    Given user with valid data
       | firstName | lastName | email   |
       | Pole      | Smith    | <email> |
     When a client wants to create a user
@@ -13,7 +13,7 @@ Feature: Create User Test
   Scenario:  Client error while creating a user with invalid parameters
     Given UP Service is up and running
     Given User Endpoint available
-    Given customer with invalid data
+    Given user with invalid data
       | firstName | lastName | email         |
       | Pole      | Smith    | invalid-email |
     When a client wants to create a user with invalid mandatory parameters

@@ -36,12 +36,16 @@ public class UserController implements V1UserApi {
 
     @Override
     public ResponseEntity<UserDto> updateUser(@Valid @RequestBody UserDto userDto) {
+        userService.findUserById(userDto.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("User", userDto.getId()));
         userService.updateUser(userDto);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Override
     public ResponseEntity<Void> deleteUserById(@PathVariable("id") Long userId) {
+        userService.findUserById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", userId));
         userService.deleteUserById(userId);
         return ResponseEntity.noContent().build();
     }
