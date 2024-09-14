@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-
   db:
     image: 'postgres:latest'
     restart: unless-stopped
@@ -25,8 +24,8 @@ services:
     environment:
       DATASOURCE_URL: 'jdbc:postgresql://db:5432/user'
       DATASOURCE_DRIVER: 'org.postgresql.Driver'
-      DATASOURCE_USERNAME_SECRET: /run/secrets/postgres_username
-      DATASOURCE_PASSWORD_SECRET: /run/secrets/postgres_password
+      POSTGRES_USER: /run/secrets/postgres_username
+      POSTGRES_PASSWORD: /run/secrets/postgres_password
     ports:
       - "8080:8080"
       - "8443:8443"
