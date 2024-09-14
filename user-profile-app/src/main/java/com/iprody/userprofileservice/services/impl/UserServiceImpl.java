@@ -25,9 +25,9 @@ public class UserServiceImpl implements UserService {
     private final UserContactRepository userContactRepository;
 
 
-    public Optional<UserDto> findUserById(Long userDd) {
+    public Optional<UserDto> findUserById(Long userId) {
         return userRepository
-                .findById(userDd)
+                .findById(userId)
                 .map(userMapper::userToUserDto);
     }
 
@@ -59,5 +59,9 @@ public class UserServiceImpl implements UserService {
     public void deleteUserById(Long id) {
         userRepository.deleteById(id);
         log.info("Delete user with ID: {}", id);
+    }
+
+    public boolean isExistUser(Long userId) {
+        return userRepository.existsById(userId);
     }
 }

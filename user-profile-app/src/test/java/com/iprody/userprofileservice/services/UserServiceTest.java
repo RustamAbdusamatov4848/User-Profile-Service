@@ -120,6 +120,20 @@ public class UserServiceTest {
         assertFalse(userService.findUserById(id).isPresent());
     }
 
+    @Test
+    void whenCheckIsExistUser_thenShouldReturnTrue() {
+        // given
+        UserDto userDto = createValidUserDto();
+        UserDto createdUserDto = userService.createUser(userDto);
+        Long userExistId = createdUserDto.getId();
+
+        // when
+        boolean foundUser = userService.isExistUser(userExistId);
+
+        // then
+        assertTrue(foundUser);
+    }
+
     private UserDto createValidUserDto() {
         UserContactDto userContactDto = createValidUserContactDto();
 
@@ -135,7 +149,7 @@ public class UserServiceTest {
                 .build();
     }
 
-    private UserContactDto createValidUserContactDto(){
+    private UserContactDto createValidUserContactDto() {
         return UserContactDto
                 .builder()
                 .telegramId("@valid_id")
