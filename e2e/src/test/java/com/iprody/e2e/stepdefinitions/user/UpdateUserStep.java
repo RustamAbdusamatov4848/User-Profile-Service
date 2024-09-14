@@ -6,7 +6,6 @@ import io.cucumber.java.en.When;
 import org.openapitools.client.api.UserControllerApi;
 import org.openapitools.client.model.UserDto;
 import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientResponseException;
 
 import java.util.List;
@@ -16,7 +15,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class UpdateUserStep {
     private final UserControllerApi userControllerApi;
-    private ResponseEntity<UserDto> responseEntity;
     private HttpStatusCode statusCode;
     private UserDto userDto;
 
@@ -27,8 +25,7 @@ public class UpdateUserStep {
     @When("a client wants to update a user with id {long}")
     public void aClientWantsToUpdateAUser(Long userId) {
         userDto = generateUniqueUserDtoForUpdate(userId);
-        responseEntity = userControllerApi.updateUserWithHttpInfo(userDto);
-        statusCode = responseEntity.getStatusCode();
+        statusCode = userControllerApi.updateUserWithHttpInfo(userDto).getStatusCode();
     }
 
     @When("wants to update a user with invalid parameters")
@@ -41,7 +38,7 @@ public class UpdateUserStep {
         userDto.setEmail(map.get("email"));
 
         try {
-            responseEntity = userControllerApi.updateUserWithHttpInfo(userDto);
+            userControllerApi.updateUserWithHttpInfo(userDto);
         } catch (RestClientResponseException e) {
             statusCode = e.getStatusCode();
         }
@@ -52,7 +49,7 @@ public class UpdateUserStep {
         userDto = generateUniqueUserDtoForUpdate(id);
 
         try {
-            responseEntity = userControllerApi.updateUserWithHttpInfo(userDto);
+            userControllerApi.updateUserWithHttpInfo(userDto);
         } catch (RestClientResponseException e) {
             statusCode = e.getStatusCode();
         }

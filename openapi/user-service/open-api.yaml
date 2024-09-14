@@ -21,10 +21,6 @@ paths:
       responses:
         "204":
           description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserDto"
         "400":
           description: Validation errors
           content:
@@ -150,6 +146,12 @@ paths:
       responses:
         "204":
           description: OK
+        "400":
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorResponse"
   /v1/users/contacts/{id}:
     get:
       tags:

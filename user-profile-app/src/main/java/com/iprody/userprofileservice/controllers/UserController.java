@@ -35,7 +35,7 @@ public class UserController implements V1UserApi {
     }
 
     @Override
-    public ResponseEntity<UserDto> updateUser(@Valid @RequestBody UserDto userDto) {
+    public ResponseEntity<Void> updateUser(@Valid @RequestBody UserDto userDto) {
         if (!userService.isExistUser(userDto.getId())) {
             throw new ResourceNotFoundException("User", userDto.getId());
         }
