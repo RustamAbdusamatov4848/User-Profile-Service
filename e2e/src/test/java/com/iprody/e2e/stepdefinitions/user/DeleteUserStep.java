@@ -1,4 +1,4 @@
-package com.iprody.e2e.stepdefinitions;
+package com.iprody.e2e.stepdefinitions.user;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
