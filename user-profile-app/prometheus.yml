@@ -4,6 +4,5 @@ global:
 scrape_configs:
   - job_name: 'user profile metrics'
     metrics_path: '/user-profile-metrics/prometheus'
-    scrape_interval: 5s
     static_configs:
       - targets: ['host.docker.internal:8080']
