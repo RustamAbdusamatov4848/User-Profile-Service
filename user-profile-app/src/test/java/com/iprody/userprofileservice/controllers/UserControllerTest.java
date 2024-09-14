@@ -42,14 +42,14 @@ public class UserControllerTest {
 
     @Test
     public void whenUserExists_thenUserShouldBeReturned() throws Exception {
-        //given
+        // given
         UserDto userDto = createUserDtoWithId();
         Long id = userDto.getId();
 
-        //when
+        // when
         when(userService.findUserById(id)).thenReturn(Optional.of(userDto));
 
-        //then
+        // then
         mockMvc.perform(get(BASE_URL + "/{id}", id)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -64,13 +64,13 @@ public class UserControllerTest {
 
     @Test
     public void whenUserDoesNotExist_thenShouldReturn404NotFound() throws Exception {
-        //given
+        // given
         Long id = 1L;
 
-        //when
+        // when
         when(userService.findUserById(id)).thenReturn(Optional.empty());
 
-        //then
+        // then
         mockMvc.perform(get(BASE_URL + "/{id}", id)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
@@ -82,14 +82,14 @@ public class UserControllerTest {
 
     @Test
     public void whenCreateUser_thenShouldReturnUserDto() throws Exception {
-        //given
+        // given
         UserDto userDto = createUserDtoWithNullId();
         UserDto createdUserDto = createUserDtoWithId();
 
-        //when
+        // when
         when(userService.createUser(userDto)).thenReturn(createdUserDto);
 
-        //then
+        // then
         mockMvc.perform(post(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userDto)))
@@ -105,7 +105,7 @@ public class UserControllerTest {
 
     @Test
     public void whenInvalidUser_thenShouldReturn400AndValidationErrors() throws Exception {
-        //given
+        // given
         UserDto invalidUserDto = new UserDto(
                 1L,
                 "A very long firstname that exceeds the maximum allowed length",
@@ -113,7 +113,7 @@ public class UserControllerTest {
                 "invalid-email",
                 1L);
 
-        //when-then
+        // when-then
         mockMvc.perform(post(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidUserDto)))
@@ -126,11 +126,11 @@ public class UserControllerTest {
 
     @Test
     public void whenUpdateUser_thenShouldReturnNoContent() throws Exception {
-        //given
+        // given
         UserDto userDto = createUserDtoWithId();
-        when(userService.findUserById(userDto.getId())).thenReturn(Optional.of(userDto));
+        when(userService.isExistUser(userDto.getId())).thenReturn(true);
 
-        //when-then
+        // when-then
         mockMvc.perform(put(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userDto)))
@@ -140,12 +140,29 @@ public class UserControllerTest {
     }
 
     @Test
-    public void whenDeleteUser_thenShouldReturnNoContent() throws Exception {
-        //given
-        Long id = 1L;
-        when(userService.findUserById(id)).thenReturn(Optional.of(new UserDto()));
+    public void whenUpdateNonExistingUser_thenShouldReturnNotFound() throws Exception {
+        // given
+        Long nonExistingId = 1000000L;
+        UserDto userDto = createUserDtoWithId();
+        userDto.setId(nonExistingId);
 
-        //when-then
+        // when-then
+        mockMvc.perform(put(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userDto)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Failed entity search"))
+                .andExpect(jsonPath("$.errors.cause")
+                        .value("User with ID: " + nonExistingId + ", not found"));
+    }
+
+    @Test
+    public void whenDeleteUser_thenShouldReturnNoContent() throws Exception {
+        // given
+        Long id = 1L;
+        when(userService.isExistUser(id)).thenReturn(true);
+
+        // when-then
         mockMvc.perform(delete(BASE_URL + "/{id}", id))
                 .andExpect(status().isNoContent());
 
@@ -153,15 +170,28 @@ public class UserControllerTest {
     }
 
     @Test
+    public void whenDeleteNonExistingUser_thenShouldReturnNotFound() throws Exception {
+        // given
+        Long nonExistingId = 1000000L;
+
+        // when-then
+        mockMvc.perform(delete(BASE_URL + "/{id}", nonExistingId))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Failed entity search"))
+                .andExpect(jsonPath("$.errors.cause")
+                        .value("User with ID: " + nonExistingId + ", not found"));
+    }
+
+    @Test
     public void whenGetUserContactExists_thenShouldReturnContact() throws Exception {
-        //given
+        // given
         UserContactDto userContactDto = createUserContactDto();
         Long contactId = userContactDto.getId();
 
-        //when
+        // when
         when(userContactService.findUserContactsById(contactId)).thenReturn(Optional.of(userContactDto));
 
-        //then
+        // then
         mockMvc.perform(get(BASE_URL + "/contacts/{id}", contactId)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -174,13 +204,13 @@ public class UserControllerTest {
 
     @Test
     public void whenGetUserContactNotFound_thenShouldReturn404NotFound() throws Exception {
-        //given
+        // given
         Long contactId = 1L;
 
-        //when
+        // when
         when(userContactService.findUserContactsById(contactId)).thenReturn(Optional.empty());
 
-        //then
+        // then
         mockMvc.perform(get(BASE_URL + "/contacts/{id}", contactId)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
@@ -193,18 +223,18 @@ public class UserControllerTest {
 
     @Test
     public void whenGetUserContactByUserIdExists_thenShouldReturnContact() throws Exception {
-        //given
+        // given
         UserContactDto userContactDto = createUserContactDto();
         UserDto userDto = createUserDtoWithId();
 
         userDto.setUserContactId(userContactDto.getId());
         Long userDtoId = userDto.getId();
 
-        //when
+        // when
         when(userContactService.findUserContactByUserId(userDtoId))
                 .thenReturn(Optional.of(userContactDto));
 
-        //then
+        // then
         mockMvc.perform(get(BASE_URL + "/{id}/contacts", userDtoId)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -217,15 +247,15 @@ public class UserControllerTest {
 
     @Test
     public void whenGetUserContactByUserIdDoesNotExist_thenShouldReturn404NotFound() throws Exception {
-        //given
+        // given
         UserDto userDto = createUserDtoWithId();
         Long userDtoId = userDto.getId();
 
-        //when
+        // when
         when(userContactService.findUserContactByUserId(userDtoId))
                 .thenReturn(Optional.empty());
 
-        //then
+        // then
         mockMvc.perform(get(BASE_URL + "/{id}/contacts", userDtoId)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
@@ -238,11 +268,11 @@ public class UserControllerTest {
 
     @Test
     public void whenUpdateUserContactByUserId_thenReturnNoContent() throws Exception {
-        //given
+        // given
         Long userDtoId = 1L;
         UserContactDto userContactDto = createUserContactDto();
 
-        //when-then
+        // when-then
         mockMvc.perform(put(BASE_URL + "/{id}/contacts", userDtoId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userContactDto)))
@@ -253,13 +283,13 @@ public class UserControllerTest {
 
     @Test
     public void whenUpdateInvalidUserContact_thenReturnBadRequest() throws Exception {
-        //given
+        // given
         Long userDtoId = 1L;
         UserContactDto userContactDto = new UserContactDto();
         userContactDto.setTelegramId("invalidTelegramId");
         userContactDto.setMobilePhone("123");
 
-        //when-then
+        // when-then
         mockMvc.perform(put(BASE_URL + "/{id}/contacts", userDtoId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userContactDto)))
