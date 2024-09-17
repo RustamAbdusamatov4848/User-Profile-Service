@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: v4-1
+      author: Rustam Abdusamatov
+      changes:
+        - sqlFile:
+            path: fill-user-contacts-test-data.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: v4-2
+      author: Rustam Abdusamatov
+      changes:
+        - sqlFile:
+            path: fill-user-test-data.sql
+            relativeToChangelogFile: true

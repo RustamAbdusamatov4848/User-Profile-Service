@@ -1,6 +1,7 @@
 package com.iprody.userprofileservice.utils.validations;
 
 import com.iprody.userprofileservice.dto.UserDto;
+import com.iprody.userprofileservice.models.Role;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -30,7 +31,7 @@ public class UserValidationTest {
     @Test
     void whenFirstNameIsTooLong_thenValidationFails() {
         // given
-        UserDto userDto = createUserDto(LONG_NAME, "Smith", "pole.smith@test.ru");
+        UserDto userDto = createUserDto(LONG_NAME, "Smith", "pole.smith@test.ru", Role.MANAGER);
 
         // when
         Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
@@ -43,7 +44,7 @@ public class UserValidationTest {
     @Test
     void whenLastNameIsTooLong_thenValidationFails() {
         // given
-        UserDto userDto = createUserDto("Pole", LONG_NAME, "pole.smith@test.ru");
+        UserDto userDto = createUserDto("Pole", LONG_NAME, "pole.smith@test.ru", Role.MANAGER);
 
         // when
         Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
@@ -56,7 +57,7 @@ public class UserValidationTest {
     @Test
     void whenEmailIsInvalid_thenValidationFails() {
         // given
-        UserDto userDto = createUserDto("Pole", "Smith", INVALID_EMAIL);
+        UserDto userDto = createUserDto("Pole", "Smith", INVALID_EMAIL, Role.MANAGER);
 
         // when
         Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
@@ -69,7 +70,7 @@ public class UserValidationTest {
     @Test
     void whenAllFieldsAreValid_thenValidationSucceeds() {
         // given
-        UserDto userDto = createUserDto("Pole", "Smith", "pole.smith@test.ru");
+        UserDto userDto = createUserDto("Pole", "Smith", "pole.smith@test.ru", Role.MANAGER);
 
         // when
         Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
@@ -78,8 +79,8 @@ public class UserValidationTest {
         assertTrue(violations.isEmpty());
     }
 
-    private static UserDto createUserDto(String firstname, String lastname, String email) {
-        return new UserDto(1L, firstname, lastname, email, 1L);
+    private static UserDto createUserDto(String firstname, String lastname, String email, Role role) {
+        return new UserDto(1L, firstname, lastname, email, 1L, role);
     }
 
     private static void assertInvalidField(String fieldName, Set<ConstraintViolation<UserDto>> violations) {

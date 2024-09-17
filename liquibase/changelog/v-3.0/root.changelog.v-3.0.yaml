@@ -4,12 +4,13 @@ databaseChangeLog:
       author: Rustam Abdusamatov
       changes:
         - sqlFile:
-            path: fill-user-contacts-test-data.sql
+            path: add-role-to-user-table.sql
             relativeToChangelogFile: true
   - changeSet:
       id: v3-2
       author: Rustam Abdusamatov
       changes:
         - sqlFile:
-            path: fill-user-test-data.sql
+            path: alter-users-drop-default-role.sql
             relativeToChangelogFile: true
+

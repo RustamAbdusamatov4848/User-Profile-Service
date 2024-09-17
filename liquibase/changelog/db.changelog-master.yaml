@@ -27,13 +27,24 @@ databaseChangeLog:
             tag: v-2.0
 
   - include:
-      file: v-3.0-test-data/root.changelog-v-3.0.yaml
+      file: v-3.0/root.changelog.v-3.0.yaml
+      relativeToChangelogFile: true
+
+  - changeSet:
+      id: 3
+      author: Rustam Abdusamatov
+      changes:
+        - tagDatabase:
+            tag: v-3.0
+
+  - include:
+      file: v-4.0-test-data/root.changelog-v-4.0.yaml
       relativeToChangelogFile: true
       context: "@test"
   - changeSet:
-      id: 3
+      id: 4
       author: Rustam Abdusamatov
       context: "@test"
       changes:
         - tagDatabase:
-            tag: v-3.0-test-data
+            tag: v-4.0-test-data

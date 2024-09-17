@@ -2,6 +2,7 @@ package com.iprody.userprofileservice.utils.mappers;
 
 
 import com.iprody.userprofileservice.dto.UserDto;
+import com.iprody.userprofileservice.models.Role;
 import com.iprody.userprofileservice.models.User;
 import com.iprody.userprofileservice.models.UserContact;
 import com.iprody.userprofileservice.utils.UserMapper;
@@ -69,8 +70,8 @@ public class UserMapperTest {
         user.setLastName("Smith");
         user.setEmail("pole.smith@test.ru");
         user.setUserContact(new UserContact());
-        user.getUserContact().setId(2L);
-
+        user.getUserContact().setId(1L);
+        user.setUserRole(Role.MANAGER);
         return user;
     }
 
@@ -80,8 +81,8 @@ public class UserMapperTest {
         userDto.setFirstName("Pole");
         userDto.setLastName("Smith");
         userDto.setEmail("pole.smith@test.ru");
-        userDto.setUserContactId(2L);
-
+        userDto.setUserContactId(1L);
+        userDto.setUserRole(Role.MANAGER);
         return userDto;
     }
 
@@ -91,6 +92,7 @@ public class UserMapperTest {
         assertEquals(userDto.getLastName(), user.getLastName());
         assertEquals(userDto.getEmail(), user.getEmail());
         assertEquals(userDto.getUserContactId(), user.getUserContact().getId());
+        assertEquals(userDto.getUserRole(), user.getUserRole());
     }
 
     private void assertUserEqualsUserDto(UserDto userDto, User user) {
@@ -99,11 +101,13 @@ public class UserMapperTest {
         assertEquals(user.getLastName(), userDto.getLastName());
         assertEquals(user.getEmail(), userDto.getEmail());
         assertEquals(user.getUserContact().getId(), userDto.getUserContactId());
+        assertEquals(user.getUserRole(), userDto.getUserRole());
     }
 
     private void assertUpdateUserFromDto(UserDto userDto, User user) {
         assertEquals(userDto.getFirstName(), user.getFirstName());
         assertEquals(userDto.getLastName(), user.getLastName());
         assertEquals(userDto.getEmail(), user.getEmail());
+        assertEquals(userDto.getUserRole(), user.getUserRole());
     }
 }

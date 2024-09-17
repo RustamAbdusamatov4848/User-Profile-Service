@@ -27,3 +27,15 @@ databaseChangeLog:
       changes:
         - tagDatabase:
             tag: v-2.0
+
+  - include:
+      file: v-3.0/root.changelog.v-3.0.yaml
+      relativeToChangelogFile: true
+
+  - changeSet:
+      id: 3
+      author: Rustam Abdusamatov
+      changes:
+        - tagDatabase:
+            tag: v-3.0
+

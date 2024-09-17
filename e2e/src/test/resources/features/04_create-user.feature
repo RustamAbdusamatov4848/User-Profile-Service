@@ -4,8 +4,8 @@ Feature: Create User Test
     Given UP Service is up and running
     Given User Endpoint available
     Given user with valid data
-      | firstName | lastName | email   |
-      | Pole      | Smith    | <email> |
+      | firstName | lastName | email   | userRole |
+      | Pole      | Smith    | <email> | MANAGER  |
     When a client wants to create a user
     Then response code for valid user is 201
     Then response body contains created user
@@ -14,7 +14,7 @@ Feature: Create User Test
     Given UP Service is up and running
     Given User Endpoint available
     Given user with invalid data
-      | firstName | lastName | email         |
-      | Pole      | Smith    | invalid-email |
+      | firstName | lastName | email         | userRole |
+      | Pole      | Smith    | invalid-email | MANAGER  |
     When a client wants to create a user with invalid mandatory parameters
     Then response code for invalid user is 400

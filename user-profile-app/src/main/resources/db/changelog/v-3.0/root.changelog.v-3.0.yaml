@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - changeSet:
+      id: v3-1
+      author: Rustam Abdusamatov
+      changes:
+        - sqlFile:
+            path: add-role-to-user-table.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: v3-2
+      author: Rustam Abdusamatov
+      changes:
+        - sqlFile:
+            path: alter-users-drop-default-role.sql
+            relativeToChangelogFile: true
+

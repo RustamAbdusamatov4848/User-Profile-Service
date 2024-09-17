@@ -39,9 +39,10 @@ const SERVICE_URL = 'http://app:8080/v1/users';
 export function createAndUpdateUser() {
 
     const newUserDto = {
-        firstName: generateUniqueEmail("firstname"),
-        lastName: generateUniqueEmail("lastname"),
-        email: generateUniqueEmail("email") + "@example.com"
+        firstName: generateUniqueField("firstname"),
+        lastName: generateUniqueField("lastname"),
+        email: generateUniqueField("email") + "@example.com",
+        userRole : generateRandomRole()
     };
 
     const createUser = http.post(`${SERVICE_URL}`, JSON.stringify(newUserDto), {
@@ -55,7 +56,10 @@ export function createAndUpdateUser() {
 
     const createdUserId = JSON.parse(createUser.body).id;
 
-    const updatedUserDto = {...newUserDto, id: createdUserId, lastName: generateUniqueEmail("lastname")};
+    const updatedUserDto = {
+        ...newUserDto,
+        id: createdUserId,
+        lastName: generateUniqueField("lastname")};
 
     const updateUser = http.put(`${SERVICE_URL}`, JSON.stringify(updatedUserDto), {
         headers: {'Content-Type': 'application/json'},
@@ -65,6 +69,23 @@ export function createAndUpdateUser() {
     check(updateUser, {
         'is status 204': (r) => r.status === 204,
     }, {name: 'UpdateUser'});
+
+    function generateUniqueField(string) {
+        const randomDigit = getRandomInt(1,10000);
+        const timestamp = new Date().getTime();
+        return string + `${timestamp}` + randomDigit;
+    }
+
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function generateRandomRole() {
+        const roles = ["MANAGER","ADMIN","SYSTEM_ADMIN"];
+        const randomIndex = Math.floor(Math.random() * roles.length);
+        return roles[randomIndex];
+    }
+
 }
 
 export function fetchUserAndContacts() {
@@ -87,12 +108,3 @@ export function fetchUserAndContacts() {
     }, {name: 'FetchUserContact'});
 }
 
-function generateUniqueEmail(string) {
-    const randomDigit = getRandomInt(1,10000);
-    const timestamp = new Date().getTime();
-    return string + `${timestamp}` + randomDigit;
-}
-
-function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}

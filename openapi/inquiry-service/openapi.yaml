@@ -1,0 +1,248 @@
+openapi: 3.0.1
+info:
+  title: Inquiry API
+  description: Inquiry API
+  version: "1.0"
+servers:
+  - url: http://localhost:8080
+    description: Generated server url
+paths:
+  /v1/inquiries:
+    post:
+      tags:
+        - inquiry-controller
+      operationId: create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InquiryDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InquiryDto"
+  /v1/inquiries/{id}/status:
+    patch:
+      tags:
+        - inquiry-controller
+      operationId: updateStatus
+      parameters:
+        - name: status
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/Status"
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+  /v1/inquiries/{id}/productId:
+    patch:
+      tags:
+        - inquiry-controller
+      operationId: updateProductRefId
+      parameters:
+        - name: productRefId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+  /v1/inquiries/{id}/note:
+    patch:
+      tags:
+        - inquiry-controller
+      operationId: updateNote
+      parameters:
+        - name: note
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+  /v1/inquiries/{id}/managerId:
+    patch:
+      tags:
+        - inquiry-controller
+      operationId: updateManagerRefId
+      parameters:
+        - name: managerRefId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+  /v1/inquiries/{id}/comment:
+    patch:
+      tags:
+        - inquiry-controller
+      operationId: updateComment
+      parameters:
+        - name: comment
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+  /v1/inquiries/{id}:
+    get:
+      tags:
+        - inquiry-controller
+      operationId: getById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InquiryDto"
+  /v1/inquiries/pageable:
+    get:
+      tags:
+        - inquiry-controller
+      operationId: getAllPageable
+      parameters:
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 25
+        - name: filter
+          in: query
+          description: "A list of filters applied to the result. Format: field_name,value.\
+          \ Example: &filter=status,NEW&filter=managerRefId,33"
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            default: []
+            example:
+              - "status,NEW"
+              - "managerRefId,33"
+        - name: sort
+          in: query
+          description: "A list of sorting criteria. Format: field_name,direction. Example:\
+          \ &sort=managerRefId,asc&sort=status,desc"
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            default: []
+            example:
+              - "managerRefId,asc"
+              - "status,desc"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/InquiryDto"
+components:
+  schemas:
+    InquiryDto:
+      required:
+        - comment
+        - customerRefId
+        - productRefId
+        - sourceId
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        productRefId:
+          type: integer
+          format: int64
+        customerRefId:
+          type: integer
+          format: int64
+        managerRefId:
+          type: integer
+          format: int64
+        sourceId:
+          type: integer
+          format: int64
+        comment:
+          type: string
+        note:
+          type: string
+        status:
+          $ref: "#/components/schemas/Status"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    Status:
+      type: string
+      enum:
+        - NEW
+        - IN_PROGRESS
+        - PAYMENT
+        - PAID
+        - REJECTED
