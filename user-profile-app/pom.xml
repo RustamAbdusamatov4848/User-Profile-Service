@@ -179,6 +179,7 @@
                             <importMappings>
                                 <importMapping>UserDto=com.iprody.userprofileservice.dto.UserDto</importMapping>
                                 <importMapping>UserContactDto=com.iprody.userprofileservice.dto.UserContactDto</importMapping>
+                                <importMapping>Role=com.iprody.userprofileservice.models.Role</importMapping>
                             </importMappings>
                             <configOptions>
                                 <interfaceOnly>true</interfaceOnly>

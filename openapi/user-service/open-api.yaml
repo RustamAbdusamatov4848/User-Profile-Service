@@ -8,10 +8,42 @@ servers:
     description: Generated server url
 paths:
   /v1/users:
+    get:
+      tags:
+        - user-controller
+      operationId: getAllUsers
+      summary: Get all users with pageable
+      parameters:
+        - name: page
+          in: query
+          description: The page number to retrieve
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: size
+          in: query
+          description: The number of users per page
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 20
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserDto"
     put:
       tags:
         - user-controller
       operationId: updateUser
+      summary: Update user
       requestBody:
         content:
           application/json:
@@ -31,6 +63,7 @@ paths:
       tags:
         - user-controller
       operationId: createUser
+      summary: Create a new User
       requestBody:
         content:
           application/json:
@@ -50,11 +83,41 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ValidationErrorResponse"
+  /v1/users/role:
+    get:
+      tags:
+        - user-controller
+      operationId: getUsersByRole
+      summary: Get all user with specified role
+      parameters:
+        - name: role
+          in: query
+          required: true
+          description: |
+            - SYSTEM_ADMIN:
+              Full access, including managing user permissions. Responsible for the technical maintenance of the system.
+            - ADMIN:
+              Can modify settings, fields, and customer records. Also has manager permissions.
+              As administrators, the head of the sales department (HSD) and the school management act.
+            - MANAGER:
+              Can view and edit customer records but cannot delete them. Handles customer requests.
+          schema:
+            $ref: "#/components/schemas/Role"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserDto"
   /v1/users/{id}/contacts:
     get:
       tags:
         - user-controller
       operationId: getUserContactByUserId
+      summary: Get user contacts by user id
       parameters:
         - name: id
           in: path
@@ -75,11 +138,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ValidationErrorResponse"
-
     put:
       tags:
         - user-controller
       operationId: updateUserContactByUserId
+      summary: Update user contacts by user id
       parameters:
         - name: id
           in: path
@@ -111,6 +174,7 @@ paths:
       tags:
         - user-controller
       operationId: getUserById
+      summary: Get user by user id
       parameters:
         - name: id
           in: path
@@ -131,11 +195,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ValidationErrorResponse"
-
     delete:
       tags:
         - user-controller
       operationId: deleteUserById
+      summary: Delete user by user id
       parameters:
         - name: id
           in: path
@@ -157,6 +221,7 @@ paths:
       tags:
         - user-controller
       operationId: getUserContactByContactId
+      summary: Get user contacts by user contact id
       parameters:
         - name: id
           in: path
@@ -177,10 +242,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ValidationErrorResponse"
-
 components:
   schemas:
     UserDto:
+      required:
+        - email
+        - userRole
       type: object
       properties:
         id:
@@ -196,9 +263,12 @@ components:
           type: string
         email:
           type: string
+          description: "Email address of the user. Must be unique."
         userContactId:
           type: integer
           format: int64
+        userRole:
+          $ref: "#/components/schemas/Role"
     UserContactDto:
       type: object
       properties:
@@ -234,3 +304,9 @@ components:
         - status
         - message
         - errors
+    Role:
+      type: string
+      enum:
+        - SYSTEM_ADMIN
+        - ADMIN
+        - MANAGER

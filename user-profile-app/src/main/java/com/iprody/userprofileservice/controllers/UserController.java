@@ -3,16 +3,21 @@ package com.iprody.userprofileservice.controllers;
 import com.iprody.userprofileservice.dto.UserContactDto;
 import com.iprody.userprofileservice.dto.UserDto;
 import com.iprody.userprofileservice.exceptions.ResourceNotFoundException;
+import com.iprody.userprofileservice.models.Role;
 import com.iprody.userprofileservice.services.UserContactService;
 import com.iprody.userprofileservice.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.openapitools.api.V1UserApi;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,6 +31,18 @@ public class UserController implements V1UserApi {
         return userService.findUserById(userId)
                 .map(user -> new ResponseEntity<>(user, HttpStatus.OK))
                 .orElseThrow(() -> new ResourceNotFoundException("User", userId));
+    }
+
+    @Override
+    public ResponseEntity<List<UserDto>> getAllUsers(Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<UserDto> userDtoList = userService.getAllUsers(pageable).getContent();
+        return ResponseEntity.ok(userDtoList);
+    }
+
+    @Override
+    public ResponseEntity<List<UserDto>> getUsersByRole(Role userRole) {
+        return ResponseEntity.ok(userService.getUsersByRole(userRole));
     }
 
     @Override

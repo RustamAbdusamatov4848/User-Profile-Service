@@ -4,12 +4,14 @@ import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.openapitools.client.api.UserControllerApi;
+import org.openapitools.client.model.Role;
 import org.openapitools.client.model.UserDto;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.client.RestClientResponseException;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -66,11 +68,17 @@ public class UpdateUserStep {
         user.setFirstName("firstName" + System.currentTimeMillis());
         user.setLastName("lastName" + System.currentTimeMillis());
         user.setEmail(generateDistinctEmail());
-
+        user.setUserRole(getRandomRole());
         return user;
     }
 
     private static String generateDistinctEmail() {
         return "user" + System.currentTimeMillis() + "@test.com";
+    }
+
+    private Role getRandomRole() {
+        String[] roles = {"MANAGER", "ADMIN", "SYSTEM_ADMIN"};
+        Random random = new Random();
+        return Role.valueOf(roles[random.nextInt(roles.length)]);
     }
 }

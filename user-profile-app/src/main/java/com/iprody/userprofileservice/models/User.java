@@ -3,6 +3,8 @@ package com.iprody.userprofileservice.models;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -37,5 +39,9 @@ public class User {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_contacts_id", referencedColumnName = "id")
     private UserContact userContact;
+
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "role")
+    private Role userRole;
 }
 

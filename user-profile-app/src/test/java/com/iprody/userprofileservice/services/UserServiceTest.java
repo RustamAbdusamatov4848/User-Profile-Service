@@ -2,6 +2,7 @@ package com.iprody.userprofileservice.services;
 
 import com.iprody.userprofileservice.dto.UserContactDto;
 import com.iprody.userprofileservice.dto.UserDto;
+import com.iprody.userprofileservice.models.Role;
 import com.iprody.userprofileservice.models.UserContact;
 import com.iprody.userprofileservice.repositories.UserContactRepository;
 import com.iprody.userprofileservice.repositories.UserRepository;
@@ -11,8 +12,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,6 +61,74 @@ public class UserServiceTest {
     }
 
     @Test
+    void whenGetAllUsers_thenShouldReturnPageUserDtos() {
+        // given
+        PageRequest pageable = PageRequest.of(0, 10);
+
+        UserDto firstUserDto = createValidUserDto();
+        userService.createUser(firstUserDto);
+
+        UserDto secondUserDto = createValidUserDto();
+        userService.createUser(secondUserDto);
+
+        UserDto thirdUserDto = createValidUserDto();
+        userService.createUser(thirdUserDto);
+
+        // when
+        Page<UserDto> result = userService.getAllUsers(pageable);
+
+        // then
+        assertNotNull(result);
+        assertEquals(3, result.getTotalElements());
+        assertEquals(3, result.getContent().size());
+        assertEquals(1, result.getTotalPages());
+    }
+
+    @Test
+    void whenGetUsersByRole_thenShouldReturnUsersWithSpecifiedRole() {
+        // given
+        Role role = Role.MANAGER;
+        UserDto firstUserDto = createValidUserDto();
+        firstUserDto.setUserRole(role);
+        userService.createUser(firstUserDto);
+
+
+        UserDto secondUserDto = createValidUserDto();
+        userService.createUser(secondUserDto);
+        secondUserDto.setUserRole(role);
+
+        // when
+        List<UserDto> result = userService.getUsersByRole(role);
+
+        // then
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals(Role.MANAGER, result.get(0).getUserRole());
+        assertEquals(Role.MANAGER, result.get(1).getUserRole());
+    }
+
+    @Test
+    void whenGetUsersByRole_thenShouldReturnEmptyListWhenNoUsersWithRole() {
+        // given
+        Role role = Role.MANAGER;
+        UserDto firstUserDto = createValidUserDto();
+        firstUserDto.setUserRole(role);
+        userService.createUser(firstUserDto);
+
+
+        UserDto secondUserDto = createValidUserDto();
+        userService.createUser(secondUserDto);
+        secondUserDto.setUserRole(role);
+
+        // when
+        List<UserDto> result = userService.getUsersByRole(Role.SYSTEM_ADMIN);
+
+        // then
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
     void whenCreateUser_thenOnlyOneUserDtoShouldBeReturned() {
         // given
         UserDto userDto = createValidUserDto();
@@ -95,6 +167,7 @@ public class UserServiceTest {
                 .lastName("NewLastName")
                 .email("new@userDto.ru")
                 .userContactId(userDto.getUserContactId())
+                .userRole(Role.ADMIN)
                 .build();
 
         userService.updateUser(newUserDto);
@@ -144,8 +217,9 @@ public class UserServiceTest {
                 .builder()
                 .firstName("Pole")
                 .lastName("Smith")
-                .email("pole.smith@test.ru")
+                .email("pole.smith" + System.currentTimeMillis() + "@test.ru")
                 .userContactId(savedUserContact.getId())
+                .userRole(Role.MANAGER)
                 .build();
     }
 
@@ -164,14 +238,16 @@ public class UserServiceTest {
                         UserDto::getFirstName,
                         UserDto::getLastName,
                         UserDto::getEmail,
-                        UserDto::getUserContactId
+                        UserDto::getUserContactId,
+                        UserDto::getUserRole
                 )
                 .containsExactly(
                         expected.getId(),
                         expected.getFirstName(),
                         expected.getLastName(),
                         expected.getEmail(),
-                        expected.getUserContactId()
+                        expected.getUserContactId(),
+                        expected.getUserRole()
                 );
     }
 
@@ -181,5 +257,6 @@ public class UserServiceTest {
         assertEquals(expected.getLastName(), actual.getLastName());
         assertEquals(expected.getEmail(), actual.getEmail());
         assertEquals(expected.getUserContactId(), actual.getUserContactId());
+        assertEquals(expected.getUserRole(), actual.getUserRole());
     }
 }

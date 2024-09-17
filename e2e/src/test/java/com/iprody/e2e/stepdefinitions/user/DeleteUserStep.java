@@ -4,6 +4,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.openapitools.client.api.UserControllerApi;
+import org.openapitools.client.model.Role;
 import org.openapitools.client.model.UserDto;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -52,7 +53,7 @@ public class DeleteUserStep {
         user.setFirstName("firstName" + System.currentTimeMillis());
         user.setLastName("lastName" + System.currentTimeMillis());
         user.setEmail(generateDistinctEmail());
-
+        user.setUserRole(Role.MANAGER);
         return user;
     }
 

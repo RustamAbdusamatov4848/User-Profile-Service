@@ -1,6 +1,7 @@
 package com.iprody.userprofileservice.services;
 
 import com.iprody.userprofileservice.dto.UserContactDto;
+import com.iprody.userprofileservice.models.Role;
 import com.iprody.userprofileservice.models.User;
 import com.iprody.userprofileservice.models.UserContact;
 import com.iprody.userprofileservice.repositories.UserContactRepository;
@@ -59,6 +60,8 @@ public class UserContactServiceTest {
     void whenFindUserContactByUserId_thenUserContactDtoShouldBeReturned() {
         // given
         User savedUser = createUser();
+        UserContactDto expectedUserContactDto = userContactMapper
+                .contactToContactDto(savedUser.getUserContact());
 
         // when
         Long userId = savedUser.getId();
@@ -67,13 +70,11 @@ public class UserContactServiceTest {
 
         // then
         assertTrue(actualUserContactDto.isPresent());
-        assertUserContactDtoEquals(
-                userContactMapper.contactToContactDto(savedUser.getUserContact()),
-                actualUserContactDto.get());
+        assertUserContactDtoEquals(expectedUserContactDto, actualUserContactDto.get());
     }
 
     @Test
-    void whenUpdateContacts_thenContactsShouldBeUpdated() {
+    void whenUpdateContactsByUserId_thenContactsShouldBeUpdated() {
         // given
         User savedUser = createUser();
 
@@ -97,6 +98,7 @@ public class UserContactServiceTest {
         user.setLastName("Smith");
         user.setEmail("pole.smith@test.ru");
         user.setUserContact(userContact);
+        user.setUserRole(Role.MANAGER);
 
         return userRepository.save(user);
     }
@@ -119,8 +121,16 @@ public class UserContactServiceTest {
 
     private void assertUserContactDtoEquals(UserContactDto expected, UserContactDto actual) {
         assertThat(actual)
-                .usingRecursiveComparison()
-                .isEqualTo(expected);
+                .extracting(
+                        UserContactDto::getId,
+                        UserContactDto::getTelegramId,
+                        UserContactDto::getMobilePhone
+                )
+                .containsExactly(
+                        expected.getId(),
+                        expected.getTelegramId(),
+                        expected.getMobilePhone()
+                );
     }
 
     private void assertUserContactEquals(UserContactDto expected, UserContact actual) {

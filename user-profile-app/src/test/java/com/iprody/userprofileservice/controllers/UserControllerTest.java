@@ -3,16 +3,23 @@ package com.iprody.userprofileservice.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iprody.userprofileservice.dto.UserContactDto;
 import com.iprody.userprofileservice.dto.UserDto;
+import com.iprody.userprofileservice.models.Role;
 import com.iprody.userprofileservice.services.UserContactService;
 import com.iprody.userprofileservice.services.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -57,7 +64,8 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.firstName").value("Pole"))
                 .andExpect(jsonPath("$.lastName").value("Smith"))
                 .andExpect(jsonPath("$.email").value("ps@test.com"))
-                .andExpect(jsonPath("$.userContactId").value(userDto.getUserContactId()));
+                .andExpect(jsonPath("$.userContactId").value(userDto.getUserContactId()))
+                .andExpect(jsonPath("$.userRole").value(String.valueOf(userDto.getUserRole())));
 
         verify(userService).findUserById(id);
     }
@@ -81,6 +89,84 @@ public class UserControllerTest {
     }
 
     @Test
+    public void whenGetAllUsers_thenAllUsersShouldBeReturned() throws Exception {
+        // given
+        List<UserDto> userDtoList = createListOfUserDto(8, Role.MANAGER);
+        Page<UserDto> pageResult = new PageImpl<>(userDtoList);
+
+        Pageable pageable = PageRequest.of(0, 2);
+
+        when(userService.getAllUsers(pageable)).thenReturn(pageResult);
+
+        // when-then
+        mockMvc.perform(get(BASE_URL)
+                        .param("page", "0")
+                        .param("size", "2")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(userDtoList.size()));
+
+        verify(userService).getAllUsers(pageable);
+    }
+
+    @Test
+    void whenGetAllUsers_thenShouldReturnEmptyListWhenNoUsers() throws Exception {
+        // given
+        List<UserDto> emptyUserList = List.of();
+        Page<UserDto> pageResult = new PageImpl<>(emptyUserList);
+
+        Pageable pageable = PageRequest.of(0, 2);
+
+        when(userService.getAllUsers(pageable)).thenReturn(pageResult);
+
+        // when-then
+        mockMvc.perform(get(BASE_URL)
+                        .param("page", "0")
+                        .param("size", "2")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+
+        verify(userService).getAllUsers(pageable);
+    }
+
+    @Test
+    void whenGetUsersByRole_thenShouldReturnListOfUsers() throws Exception {
+        // given
+        Role role = Role.MANAGER;
+        List<UserDto> userList = createListOfUserDto(8, role);
+
+        when(userService.getUsersByRole(role)).thenReturn(userList);
+
+        // when-then
+        mockMvc.perform(get(BASE_URL + "/role")
+                        .param("role", String.valueOf(role))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(userList.size()));
+
+        verify(userService).getUsersByRole(role);
+    }
+
+    @Test
+    void whenGetUsersByRole_thenShouldReturnEmptyListIfNoUsersWithGivenRole() throws Exception {
+        // given
+        Role specifiedRole = Role.SYSTEM_ADMIN;
+        List<UserDto> userListWithoutSpecifiedRole = createListOfUserDto(8, Role.MANAGER);
+
+        when(userService.getUsersByRole(specifiedRole)).thenReturn(List.of());
+
+        // when-then
+        mockMvc.perform(get(BASE_URL + "/role")
+                        .param("role", String.valueOf(specifiedRole))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+
+        verify(userService).getUsersByRole(specifiedRole);
+    }
+
+    @Test
     public void whenCreateUser_thenShouldReturnUserDto() throws Exception {
         // given
         UserDto userDto = createUserDtoWithNullId();
@@ -98,7 +184,8 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.firstName").value("Pole"))
                 .andExpect(jsonPath("$.lastName").value("Smith"))
                 .andExpect(jsonPath("$.email").value("ps@test.com"))
-                .andExpect(jsonPath("$.userContactId").value(createdUserDto.getUserContactId()));
+                .andExpect(jsonPath("$.userContactId").value(createdUserDto.getUserContactId()))
+                .andExpect(jsonPath("$.userRole").value(String.valueOf(createdUserDto.getUserRole())));
 
         verify(userService).createUser(userDto);
     }
@@ -111,7 +198,8 @@ public class UserControllerTest {
                 "A very long firstname that exceeds the maximum allowed length",
                 "A very long lastname that exceeds the maximum allowed length",
                 "invalid-email",
-                1L);
+                1L,
+                Role.MANAGER);
 
         // when-then
         mockMvc.perform(post(BASE_URL)
@@ -205,7 +293,7 @@ public class UserControllerTest {
     @Test
     public void whenGetUserContactNotFound_thenShouldReturn404NotFound() throws Exception {
         // given
-        Long contactId = 1L;
+        Long contactId = 1000000L;
 
         // when
         when(userContactService.findUserContactsById(contactId)).thenReturn(Optional.empty());
@@ -248,22 +336,21 @@ public class UserControllerTest {
     @Test
     public void whenGetUserContactByUserIdDoesNotExist_thenShouldReturn404NotFound() throws Exception {
         // given
-        UserDto userDto = createUserDtoWithId();
-        Long userDtoId = userDto.getId();
+        Long nonExistingUserDtoId = 1000000L;
 
         // when
-        when(userContactService.findUserContactByUserId(userDtoId))
+        when(userContactService.findUserContactByUserId(nonExistingUserDtoId))
                 .thenReturn(Optional.empty());
 
         // then
-        mockMvc.perform(get(BASE_URL + "/{id}/contacts", userDtoId)
+        mockMvc.perform(get(BASE_URL + "/{id}/contacts", nonExistingUserDtoId)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Failed entity search"))
                 .andExpect(jsonPath("$.errors.cause")
-                        .value("User contact with ID: " + userDtoId + ", not found"));
+                        .value("User contact with ID: " + nonExistingUserDtoId + ", not found"));
 
-        verify(userContactService).findUserContactByUserId(userDtoId);
+        verify(userContactService).findUserContactByUserId(nonExistingUserDtoId);
     }
 
     @Test
@@ -306,6 +393,7 @@ public class UserControllerTest {
                 .lastName("Smith")
                 .email("ps@test.com")
                 .userContactId(1L)
+                .userRole(Role.MANAGER)
                 .build();
     }
 
@@ -315,6 +403,7 @@ public class UserControllerTest {
                 .lastName("Smith")
                 .email("ps@test.com")
                 .userContactId(1L)
+                .userRole(Role.MANAGER)
                 .build();
     }
 
@@ -324,5 +413,19 @@ public class UserControllerTest {
                 .telegramId("@valid_id")
                 .mobilePhone("+1234567890")
                 .build();
+    }
+
+    private static List<UserDto> createListOfUserDto(int userDtoCount, Role role) {
+        return IntStream
+                .range(0, userDtoCount)
+                .mapToObj(i -> new UserDto(
+                        (long) i,
+                        "Pole" + i,
+                        "Smith" + i,
+                        "test" + i + "@test.com",
+                        (long) i,
+                        role
+                ))
+                .toList();
     }
 }

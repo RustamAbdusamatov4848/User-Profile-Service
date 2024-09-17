@@ -10,9 +10,11 @@ import org.mapstruct.MappingTarget;
 public interface UserMapper {
 
     @Mapping(source = "userContact.id", target = "userContactId")
+    @Mapping(source = "userRole", target = "userRole")
     UserDto userToUserDto(User user);
 
     @Mapping(source = "userContactId", target = "userContact.id")
+    @Mapping(source = "userRole", target = "userRole")
     User userDtoToUser(UserDto userDTO);
 
     @Mapping(target = "id", ignore = true)

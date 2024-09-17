@@ -5,6 +5,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.openapitools.client.api.UserControllerApi;
+import org.openapitools.client.model.Role;
 import org.openapitools.client.model.UserDto;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -75,6 +76,7 @@ public class CreateUserStep {
         user.setFirstName(map.get("firstName"));
         user.setLastName(map.get("lastName"));
         user.setEmail(map.get("email"));
+        user.setUserRole(Role.valueOf(map.get("userRole")));
         return user;
     }
 
@@ -90,5 +92,6 @@ public class CreateUserStep {
         assertEquals(userDto.getFirstName(), responseUserDto.getFirstName());
         assertEquals(userDto.getLastName(), responseUserDto.getLastName());
         assertEquals(userDto.getEmail(), responseUserDto.getEmail());
+        assertEquals(userDto.getUserRole(), responseUserDto.getUserRole());
     }
 }
