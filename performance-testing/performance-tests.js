@@ -39,10 +39,10 @@ const SERVICE_URL = 'http://app:8080/v1/users';
 export function createAndUpdateUser() {
 
     const newUserDto = {
-        firstName: generateUniqueField("firstname"),
-        lastName: generateUniqueField("lastname"),
-        email: generateUniqueField("email") + "@example.com",
-        userRole : generateRandomRole()
+        firstName: generateUniqueField('firstname'),
+        lastName: generateUniqueField('lastname'),
+        email: generateUniqueField('email') + '@example.com',
+        userRole: 'MANAGER'
     };
 
     const createUser = http.post(`${SERVICE_URL}`, JSON.stringify(newUserDto), {
@@ -54,12 +54,15 @@ export function createAndUpdateUser() {
         'is status 201': (r) => r.status === 201,
     }, {name: 'CreateUser'});
 
-    const createdUserId = JSON.parse(createUser.body).id;
 
     const updatedUserDto = {
-        ...newUserDto,
-        id: createdUserId,
-        lastName: generateUniqueField("lastname")};
+        id: JSON.parse(createUser.body).id,
+        firstName: generateUniqueField('firstname'),
+        lastName: generateUniqueField('lastname'),
+        email: generateUniqueField('email') + '@example.com',
+        userContactId: JSON.parse(createUser.body).userContactId,
+        userRole: 'MANAGER'
+    };
 
     const updateUser = http.put(`${SERVICE_URL}`, JSON.stringify(updatedUserDto), {
         headers: {'Content-Type': 'application/json'},
@@ -79,13 +82,6 @@ export function createAndUpdateUser() {
     function getRandomInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
-
-    function generateRandomRole() {
-        const roles = ["MANAGER","ADMIN","SYSTEM_ADMIN"];
-        const randomIndex = Math.floor(Math.random() * roles.length);
-        return roles[randomIndex];
-    }
-
 }
 
 export function fetchUserAndContacts() {
