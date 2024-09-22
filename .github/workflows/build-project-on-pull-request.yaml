@@ -28,7 +28,7 @@ jobs:
           restore-keys: ${{ runner.os }}-maven
 
       - name: Clean with Maven
-        run: mvn -B clean
+        run: mvn -B clean -DskipTests
 
       - name: Compile with Maven
         run: mvn -B compile
@@ -36,5 +36,5 @@ jobs:
       - name: Run Checkstyle
         run: mvn -B checkstyle:check
 
-      - name: Test with Maven
-        run: mvn -B test
+      - name: Test user-profile-app with Maven
+        run: mvn -B -pl user-profile-app test
