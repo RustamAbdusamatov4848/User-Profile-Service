@@ -19,6 +19,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleValidationException(MethodArgumentNotValidException ex) {
+        log.error("Validation failed: {}", ex.getMessage(), ex);
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(error ->
                 errors.put(error.getField(), error.getDefaultMessage())
@@ -30,6 +31,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Object> handleEntityNotFoundException(ResourceNotFoundException ex) {
+        log.error("Failed entity search: {}", ex.getMessage(), ex);
         String message = ex.getMessage();
         Map<String, String> errors = new HashMap<>();
         errors.put("cause", message);
@@ -41,7 +43,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleResourceProcessingException(Exception ex) {
-        log.error("An error occurred: {}", ex.getMessage(), ex);
+        log.error("Internal server error: {}", ex.getMessage(), ex);
         ErrorResponse errorsResponseDto = new ErrorResponse(
                 "Internal server error", Collections.emptyMap());
         return new ResponseEntity<>(errorsResponseDto, HttpStatus.INTERNAL_SERVER_ERROR);
