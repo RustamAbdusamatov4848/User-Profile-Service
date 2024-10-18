@@ -17,7 +17,7 @@ services:
       start_period: 5s
 
   app:
-    image: 'ghcr.io/iprody/iprody-devs-gr0000000011-user-profile/user-profile-service:latest'
+    image: 'ghcr.io/rustamabdusamatov4848/user-profile-service/user-profile-service:latest'
     restart: always
     container_name: user-service-app
     environment:
